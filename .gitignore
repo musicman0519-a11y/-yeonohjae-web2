@@ -1,0 +1,12 @@
+# 깃허브에 올리지 않는 것 (.vercelignore 와 맞춤 + 개발 도구)
+_tools/
+.claude/
+serve.py
+index-v1.html
+index-v3.html
+images/intro-concerns/
+logo/background_yeonojae_pattern.png
+node_modules/
+*.log
+.DS_Store
+Thumbs.db

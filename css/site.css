@@ -1,0 +1,88 @@
+/* =========================================================
+   연오재한의원 공통 스타일 (Tailwind 외 추가 CSS)
+   ========================================================= */
+
+/* 원본과 동일한 영문 디스플레이 폰트 (Mona Sans, 가변 폰트) */
+@font-face {
+  font-family: "Mona Sans";
+  font-weight: 200 900;
+  font-display: block;
+  font-style: normal;
+  font-stretch: 75% 125%;
+  src: url(/fonts/Mona-Sans.var.woff2) format("woff2");
+}
+
+html { scroll-behavior: smooth; }
+
+/* ---------- 검색엔진용 접힌 소개글 (원본 HiddenSeoContent) ---------- */
+.seo-fold {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+  margin: 0; padding: 0; border: 0; max-height: 100vh; overflow-y: auto;
+  background: transparent; pointer-events: none;
+}
+.seo-fold[open] { background: #ffffff; }
+.seo-fold summary {
+  list-style: none; cursor: pointer; height: 8px; margin: 0; padding: 0;
+  border: none; outline: none; position: relative; pointer-events: auto;
+}
+.seo-fold summary::-webkit-details-marker { display: none; }
+.seo-fold summary::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 3px; height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.28), rgba(255,255,255,0));
+}
+.seo-fold > div { pointer-events: auto; padding: 18px 24px; color: #111827; background: #ffffff; }
+
+/* ---------- 스크롤 등장 애니메이션 (원본 framer-motion 대체) ---------- */
+[data-reveal] {
+  opacity: 0;
+  transform: var(--reveal-from, none);
+  transition: opacity .8s cubic-bezier(.22, 1, .36, 1), transform .8s cubic-bezier(.22, 1, .36, 1);
+  will-change: opacity, transform;
+}
+[data-reveal].is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- 헤더: 햄버거 버튼 / 드롭다운 ---------- */
+.menu-btn span { transition: transform .3s ease, opacity .3s ease; }
+.menu-btn.is-open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.menu-btn.is-open span:nth-child(2) { opacity: 0; }
+.menu-btn.is-open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+#nav-dropdown.is-open { animation: dropdown-in .2s ease-out; }
+@keyframes dropdown-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+#mobile-menu.is-open { animation: menu-in .3s ease-out; }
+@keyframes menu-in { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: none; } }
+
+/* ---------- FAQ 답변 펼침 ---------- */
+.faq-answer { animation: faq-in .3s ease-out; }
+@keyframes faq-in { from { opacity: 0; transform: translateY(-.5rem); } to { opacity: 1; transform: none; } }
+
+/* ---------- 기타 ---------- */
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+body.menu-open, body.modal-open { overflow: hidden; }
+
+/* ---------- 홈 v3 (2026-10-20) ---------- */
+/* 흑백 사진: 마우스를 올리면 컬러 */
+.bw img { filter: grayscale(1); transition: filter .6s ease, transform .7s ease; }
+.bw:hover img { filter: grayscale(0); }
+@media (hover: none) { .bw img { filter: grayscale(1); } }
+
+/* 종이 질감 배경 */
+.paper {
+  background-color: #f6f1ea;
+  background-image:
+    radial-gradient(at 20% 10%, rgba(255,255,255,.7) 0, rgba(255,255,255,0) 45%),
+    radial-gradient(at 85% 90%, rgba(158,123,96,.10) 0, rgba(158,123,96,0) 50%);
+}
+
+/* 검사 7종 목록: 활성 항목만 설명 표시, 사진 교차 */
+.exam-item .exam-desc { display: none; }
+.exam-item.is-active .exam-desc { display: block; }
+.exam-item:not(.is-active) > span:nth-child(2) > span:first-child { color: #717680; }
+.exam-item.is-active > span:first-child { color: #181d27; }
+.exam-img { opacity: 0; transition: opacity .5s ease; }
+.exam-img.is-active { opacity: 1; }
