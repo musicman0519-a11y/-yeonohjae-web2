@@ -19,11 +19,18 @@ www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 �
 - `video/yeonojae-intro.mp4`: 히어로 영상(2분, 11MB). 원본 파일명이 한글이라 build.py 의 `VIDEO_SRC` 로 치환한다.
 - `logo/ icon/ og/ fonts/`: 자산. 경로는 원본 사이트와 동일(루트 절대경로). OG 이미지는 `og/yeonojae-og-sign-1200x630.jpg`(목재 간판 사진).
 - `_tools/build.py`: `_tools/original/*.html`(원본 SSR 저장본) → 전 페이지 + sitemap + CSS 재생성. `_tools/tailwind/`: Tailwind CLI. `_tools/check/`: 검증 스크립트(README 있음). `_tools/unused-assets/`: 안 쓰는 옛 자산·잘못 만든 합성본 보관. `_tools/brand/`: 소개문 원문, 외부 등록 체크리스트(2026-10-21), FAQ 검수용 문서(2026-10-23, build.py 가 매번 다시 씀).
+- 구조화 데이터·수정일·llms.txt(2026-10-23, 1단계 SEO/AEO): `build_head()` 가 원본 MedicalClinic JSON-LD 를 `enrich_clinic_ld()` 로 보강(@id, 실제 사진, hasMap·sameAs=`CLINIC["same_as"]`, 의료진 Person 상세 `person_ld()`(DOCTORS_V2 career 문구에서 학력·자격·학회·수상 자동 분류), 홈에는 availableService·ReserveAction) 하고 `page_ld()` 로 MedicalWebPage(dateModified)+BreadcrumbList 를 붙인다. 모든 페이지는 `write_page()` 로 저장해야 한다: 날짜 토큰(`@@LASTMOD@@`, `@@LASTMOD_KR@@`)을 채우며, 날짜를 뺀 내용이 HEAD 커밋과 같으면 커밋에 적힌 날짜를 유지하고 달라졌으면 오늘 날짜를 넣는다(푸터 "이 페이지 최종 수정일", JSON-LD dateModified, sitemap lastmod 가 모두 이 값). `write_llms()` 가 `llms.txt`(병원 정보·진료시간·의료진·페이지 목록·대표 FAQ·주제 링크)를 생성한다. GA4 이벤트는 main.js: call_click·booking_click·map_click·outbound_click(캡처 단계 클릭 위임), faq_open·faq_search·faq_filter, scroll_depth(25/50/75/100). 파라미터(link_text, section, faq_question, percent_scrolled)는 GA4 맞춤 정의에 등록해야 보고서에 보인다.
 - `vercel.json`: `cleanUrls: true`, 보안 헤더(nosniff, Referrer-Policy, X-Frame-Options, Permissions-Policy), 자산 캐시. `.vercelignore`: CLAUDE.md, README, `.claude/`, `_tools/`, serve.py, index-v1.html·index-v3.html 과 v1 전용 자산.
+
+## 배포 (2026-10-23 연결)
+- 깃허브 `musicman0519-a11y/-yeonohjae-web2`(public, 이름 앞 하이픈은 생성 시 실수지만 동작엔 무관) ← 이 폴더가 로컬 git 저장소(`main`). 반영: `git add -A && git commit -m "..." && git push` (일반 푸시는 Claude 가 직접 할 수 있음. force push·merge 는 권한 정책에 막힘).
+- `.gitignore` 가 `_tools/`, `.claude/`, serve.py, index-v1/v3, node_modules 를 제외한다. CLAUDE.md·README 는 깃허브에는 올라가고 `.vercelignore` 로 배포에서만 빠진다.
+- Vercel: 새 저장소를 Import 해 프로젝트 생성(Framework Other, 빌드 없음). 옛 저장소 `yeonohjae-home` 과 옛 Vercel 프로젝트는 도메인 이전 후 삭제 예정.
+- 로컬 git 은 `core.autocrlf=false`.
 
 ## 명령
 - 로컬 미리보기: `python serve.py 8090` → http://localhost:8090 (cleanUrl 지원). 8080은 다른 프로젝트(한국인덕션)가 점유하므로 쓰지 않는다. `file://`로 열면 절대경로 때문에 깨진다.
-- 전체 재생성: `python _tools/build.py` (페이지 16개 + sitemap.xml + css/tailwind.css + FAQ 검수 문서 덮어씀. 직접 고친 HTML이 있으면 먼저 build.py에 반영할 것). CSS 빌드는 끝에서 `npm run build` 를 자동 호출하며 `_tools/tailwind/node_modules` 가 없으면 `npm install --prefix _tools/tailwind` 먼저.
+- 전체 재생성: `python _tools/build.py` (페이지 16개 + sitemap.xml + llms.txt + css/tailwind.css + FAQ 검수 문서 덮어씀. 수정일은 git HEAD 와 비교해 정하므로 커밋 전 빌드는 바뀐 페이지만 오늘 날짜가 된다. 직접 고친 HTML이 있으면 먼저 build.py에 반영할 것). CSS 빌드는 끝에서 `npm run build` 를 자동 호출하며 `_tools/tailwind/node_modules` 가 없으면 `npm install --prefix _tools/tailwind` 먼저.
 - CSS 만 다시 빌드: `npm --prefix _tools/tailwind run build`
 - 사진 다시 변환: `python -I _tools/photos-convert.py` (매니페스트의 번호만 바꾸면 됨)
 - Python 주의: Git Bash 에서 `python` 은 다른 프로젝트 venv(`pyeonsawon-flask/.venv`)로 잡혀 Pillow 가 없다. 이미지 작업은 `/c/Users/music/AppData/Local/Programs/Python/Python314/python` 을 명시(Pillow, rembg, onnxruntime 설치돼 있음). build.py 는 어느 쪽이든 된다.
@@ -43,7 +50,7 @@ www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 �
 
 ## 확인 방법
 - `_tools/check/` 의 puppeteer-core 스크립트(실행 전 그 폴더에서 `npm i puppeteer-core`, Chrome 경로는 스크립트 상단). `full.js`(전체 페이지 캡처+넘침·깨진 이미지), `allpages.js`(13페이지 × 데스크톱/모바일 콘솔 오류·404·넘침), `console.js`, `shot.js`(뷰포트 캡처·스크롤·클릭·eval).
-- `python -I _tools/check/audit.py`: 내부 링크·앵커·파일 존재·중복 id·임시 문구·JSON-LD·sitemap 검사. `classcheck.py`: HTML/JS 의 클래스가 css/tailwind.css 에 있는지.
+- `python -I _tools/check/audit.py`: 내부 링크·앵커·파일 존재·중복 id·임시 문구·JSON-LD·sitemap(lastmod)·최종 수정일·BreadcrumbList·llms.txt 검사 + 의료광고 표현 경고(`AD_PATTERNS`: 완치·100%·효과 보장·부작용/재발 없음 단정·최상급·치료율·비교·경험담·유인·안전 단정. 경고는 참고용, 문제 수에는 안 들어감). 2026-10-23 기준 남는 경고는 seo-fold 의 원본 문장 "…표현은 피하는 것이 안전합니다"(전 페이지, 작성 지침 같은 문장이라 seo-fold 교체 때 정리) 뿐. 피부 클리닉의 "완치가 어렵다고 알려진 질환에서도 호전을 경험한"(원본 문구)은 패턴에서 제외했지만 원장 검수 대상. `classcheck.py`: HTML/JS 의 클래스가 css/tailwind.css 에 있는지.
 - headless Chrome `--screenshot`과 수동 CDP는 이 사이트에서 불안정했다. 전체 페이지 캡처에서 히어로가 끝에 한 번 더 보이는 건 캡처 현상이다.
 - 지도는 `naverMapKeyId` 가 비어 있으면 구글 지도 iframe(`maps?q=위도,경도&output=embed`, 키 불필요)으로 표시된다. 네이버 키를 넣고 NCP 콘솔에 도메인을 등록하면 네이버 지도로 바뀌고, 네이버 로드 실패 시에도 구글로 떨어진다. 지도 아래 주소·역 안내·버튼 행은 JS 가 붙인다.
 
@@ -51,6 +58,8 @@ www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 �
 - [ ] 원장 검수 대기: FAQ 70문항(`_tools/brand/FAQ_검수용_2026-10-23.md`, 수정은 `_tools/faq_data.py` 만 고치고 재생성), 푸터의 "고양 화정 · 일산 · 덕양 인접 진료" 문구와 진료시간 표기. 비급여 비용 안내 페이지는 만들지 않기로(비용 질문은 "진료 시 안내"). 만들게 되면 푸터 `FOOTER_GUIDE` 에 추가.
 - [ ] 조문영 원장: 진료 분야 문구("스포츠 손상 · 근골격 초음파 진단 · 한방비만 · 도핑 상담")는 이력에서 추정한 것, "국제HI웰니스페스타" 표기도 확인 필요. 사진은 2026-10-22 받은 스튜디오 사진으로 해결(원본 `_tools/unused-assets/team/jo-munyoung_studio_original.png`, 338px 라 작은 프로필 전용).
 - [ ] 배포 도메인 확정 후: 네이버 클라우드(ncloud.com) Maps 에서 Client ID 발급·도메인 등록 후 site-config.js `naverMapKeyId` 입력(그 전까지는 구글 지도), www.yeonojae.com 이 아니면 build.py `SITE_URL`·site-config.js `siteUrl`·robots.txt 수정. 배포 후 서치콘솔에서 색인 요청, GA4 보존기간 14개월 설정(개인정보처리방침과 일치). 검색엔진 등록 자체는 사용자가 배포 전에 라이브 도메인으로 먼저 한다(아래 SEO 항목).
+- [x] SEO/AEO 1단계(2026-10-23 완료): GA4 전환·체류 이벤트, sitemap lastmod·dateModified·푸터 수정일 자동 갱신, llms.txt, BreadcrumbList·MedicalWebPage, Person 스키마 보강(이력 자동 분류), 의료광고 표현 자동 점검. 후속: GA4 관리 > 맞춤 정의에 link_text·section·faq_question·percent_scrolled 등록(사용자), `CLINIC["same_as"]` 에 네이버 플레이스 고유 URL·굿닥·카카오맵 추가(링크 대기), seo-fold 원본 문장 교체.
+- [ ] SEO/AEO 2단계(사용자 결정·자료 필요): 홈 `<title>`·설명 교체 문안, 의료진 페이지(/doctors), 원장칼럼 본문 3편(저자·작성일·수정일 표기). 3단계: 히어로 영상 자막(.vtt)·대본, FAQ 질문문 환자어 재점검, Microsoft Clarity 여부.
 - [ ] SEO/AEO/GEO: 2026-10-21 측정 결과 현재 라이브 사이트는 병원명 검색에도 공식 사이트가 안 나옴(굿닥만). 사용자가 B안(서치콘솔·서치어드바이저·플레이스·디렉터리 등록과 정보 통일)을 직접 하기로 함 → 체크리스트 `_tools/brand/외부등록_체크리스트_2026-10-21.md`. 끝나면 A안(제목·설명·JSON-LD·robots·llms.txt·seo-fold 교체·클리닉 FAQ·의료진 페이지) 진행. 주소 표기는 2026-10-22 네이버 플레이스 기준("경기 고양시 덕양구 화중로 60 2층 205호, 206호")으로 푸터·예약 안내·JSON-LD·지도 카드 통일 완료.
 - [ ] 노란 물결 밑줄(`decoration-wavy decoration-amber-400`, 12곳): 소제목은 라벨형, 문장 강조는 브론즈 글자색, 원장 이름은 강조 제거로 바꾸는 안을 제안했고 결정 대기. 적용은 transform_body 치환으로.
 - [ ] 리디자인은 보류(사용자가 v2 선호). 다시 꺼내면 index-v3.html 의 섹션을 하나씩 보여주고 고르게 할 것.

@@ -1,5 +1,5 @@
 /* 연오재한의원 공통 스크립트
-   - 스크롤 등장 애니메이션, 헤더 드롭다운/모바일 메뉴, FAQ, 의료진 팝업, 네이버 지도, GA4 */
+   - 스크롤 등장 애니메이션, 헤더 드롭다운/모바일 메뉴, FAQ, 의료진 팝업, 네이버 지도, GA4(+전환·체류 이벤트) */
 (function () {
   "use strict";
   var cfg = window.SITE_CONFIG || {};
@@ -15,6 +15,40 @@
     window.gtag("js", new Date());
     window.gtag("config", cfg.gaId);
   }
+
+  /* ---------- GA4 이벤트: 전환(전화·예약·지도·외부 링크)·FAQ 열기·스크롤 깊이 ----------
+     GA4 관리 > 맞춤 정의에 link_text, section, faq_question, percent_scrolled 를 등록하면 보고서에서 볼 수 있다. */
+  var track = function (name, params) {
+    if (typeof window.gtag !== "function") return;
+    params = params || {};
+    params.page_path = location.pathname;
+    window.gtag("event", name, params);
+  };
+  var sectionOf = function (el) {
+    var s = el.closest ? el.closest("section[id], header, footer, [data-section]") : null;
+    return s ? (s.id || s.getAttribute("data-section") || s.tagName.toLowerCase()) : "";
+  };
+  document.addEventListener("click", function (e) {
+    var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+    if (!a) return;
+    var href = a.getAttribute("href") || "";
+    var base = { link_url: href, link_text: (a.textContent || "").replace(/\s+/g, " ").trim().slice(0, 60), section: sectionOf(a) };
+    if (href.indexOf("tel:") === 0) track("call_click", base);
+    else if (/booking\.naver\.com/.test(href)) track("booking_click", base);
+    else if (/map\.naver\.com|naver\.me|google\.[a-z.]+\/maps|kakao\.com/.test(href)) track("map_click", base);
+    else if (/^https?:\/\//.test(href) && a.hostname && a.hostname !== location.hostname) track("outbound_click", base);
+  }, true);
+  (function () {
+    var marks = [25, 50, 75, 100], sent = {};
+    var onScroll = function () {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max <= 0) return;
+      var pct = Math.round((window.scrollY / max) * 100);
+      marks.forEach(function (m) { if (pct >= m && !sent[m]) { sent[m] = true; track("scroll_depth", { percent_scrolled: m }); } });
+      if (sent[100]) window.removeEventListener("scroll", onScroll);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+  })();
 
   /* ---------- 스크롤 등장 애니메이션 ---------- */
   var revealEls = Array.prototype.slice.call(document.querySelectorAll("[data-reveal]"));
@@ -129,7 +163,11 @@
       item.querySelector("[data-faq-toggle]").addEventListener("click", function () {
         var isOpen = !item.querySelector(".faq-answer").classList.contains("hidden");
         faqItems.forEach(function (o) { setFaq(o, false); });
-        if (!isOpen) setFaq(item, true);
+        if (!isOpen) {
+          setFaq(item, true);
+          var qEl = item.querySelector("[data-faq-toggle] span");
+          track("faq_open", { faq_question: (qEl ? qEl.textContent : "").trim().slice(0, 100), section: sectionOf(item) });
+        }
       });
     });
   }
@@ -198,10 +236,19 @@
       if (empty) empty.classList.toggle("hidden", shown > 0);
       if (countEl) countEl.textContent = shown;
     };
-    faqSearch.addEventListener("input", apply);
+    var searchTimer = null;
+    faqSearch.addEventListener("input", function () {
+      apply();
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        var term = faqSearch.value.trim();
+        if (term.length >= 2) track("faq_search", { search_term: term.slice(0, 60), results: cards.filter(function (c) { return !c.classList.contains("hidden"); }).length });
+      }, 900);
+    });
     chips.forEach(function (ch) {
       ch.addEventListener("click", function () {
         topic = ch.getAttribute("data-faq-chip");
+        track("faq_filter", { topic: topic });
         chips.forEach(function (o) {
           var on = o === ch;
           o.classList.toggle("is-active", on);
