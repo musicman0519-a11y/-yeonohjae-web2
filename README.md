@@ -21,6 +21,8 @@ www.yeonojae.com 과 동일한 레이아웃·메뉴·콘텐츠를 정적 HTML + 
 | /clinics/ear-nose-throat | clinics/ear-nose-throat.html | 안면마비·이명·어지럼 클리닉 |
 | /column | column.html | 원장칼럼 (신규) |
 | /faq | faq.html | 자주 묻는 질문 70개 (신규, 검색·주제 필터) |
+| /faq/<주제> | faq/*.html (12) | 주제별 FAQ 페이지 (2026-10-23, `_tools/faq_data.py` 의 key) |
+| /column/<slug> | column/*.html (6) | 원장칼럼 글 (2026-10-23, `_tools/column_data.py`) |
 | /privacy | privacy.html | 개인정보처리방침 (신규, 검색 제외) |
 | (오류) | 404.html | 없는 주소 안내 (Vercel 자동 사용) |
 

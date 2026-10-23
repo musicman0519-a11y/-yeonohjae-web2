@@ -10,6 +10,8 @@ www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 �
 - `index-v1.html`: 원본 복제 홈. noindex, 배포 제외.
 - `diagnostics.html`, `personalized-herbal-medicine.html`, `clinics/*.html`(7개): 원본 SSR 본문을 변환한 페이지. 사진은 `PAGE_IMAGES`(페이지별 목록, 원본의 placeholder/picsum 을 등장 순서대로 치환). 피부 클리닉 배너는 사용자 제공 사진(`photo/skin-diagnosis.webp`, 2026-10-22).
 - `column.html`(/column): 신규 원장칼럼. `COLUMNS` 데이터로 카드 3개. 글 본문은 아직 없고 기존 페이지로 링크한다.
+- `faq/<key>.html`(/faq/<key>, 12개, 2026-10-23): 주제별 FAQ 독립 페이지(`build_faq_topic_page()`, FAQPage JSON-LD, 다른 주제 칩, 관련 클리닉 링크). 허브 섹션 헤더의 "이 주제만 보기", 클리닉 FAQ 의 "질문 전체 보기", 본문 중간 CTA(`sec_inline_cta()`, `insert_mid_cta()` 가 서브페이지 3번째 섹션 뒤에 삽입)가 여기로 연결된다.
+- `column/<slug>.html`(/column/<slug>, 6편, 2026-10-23): 원장칼럼 글. 데이터 `_tools/column_data.py` 의 `ARTICLES`(sections/takeaways/related/faq_topic), 빌더 `article_main()`·`build_article_page()`, Article JSON-LD(`article_ld()`, author = 연오재한의원 원장진 Organization, og:type article). 허브·홈 카드 `COLUMNS` 는 ARTICLES 에서 파생(홈은 3편). 검수 문서 `_tools/brand/칼럼_검수용_<날짜>.md` 를 build 마다 생성. 글은 사이트 본문·FAQ 에 있는 내용만 풀어 쓴 초안이며 원장 검수 전.
 - `faq.html`(/faq): 자주 묻는 질문 허브(2026-10-23, 레퍼런스 egowoon.co.kr/faq). 데이터는 `_tools/faq_data.py` 의 `FAQ_ALL`(주제 12개·70문항, 항목=(질문, 답변, 링크문구, 링크, 홈대표)). 같은 데이터로 홈 하단 5문항(home=True), 클리닉·진단·한약 페이지 하단 아코디언(`sec_clinic_faq`, 주제의 `page` 로 매칭), FAQPage JSON-LD(모든 곳), 검수용 문서 `_tools/brand/FAQ_검수용_2026-10-23.md` 가 생성된다. 검색·주제 칩 필터는 main.js(`[data-faq-search]`). 답변은 1~4문장, 효과 보장 표현 금지, 비용은 숫자 없이.
 - `privacy.html`(/privacy), `404.html`: `PRIVACY_SECTIONS`, `build_404_page()`. 둘 다 noindex. Vercel 이 404.html 을 자동 사용.
 - 헤더·푸터·퀵바는 build.py 가 모든 페이지에 넣는다(`build_header()`, `build_footer()`). 푸터는 4단(병원 정보 / 진료시간 `FOOTER_HOURS` / 진료 `FOOTER_CARE` / 안내 `FOOTER_GUIDE`, 레퍼런스 egowoon 푸터, 2026-10-23). 의료기관 표시 정보(대표자·주소·전화·사업자등록번호·역 안내)는 `CLINIC` 딕셔너리. 주소는 네이버 플레이스 표기 기준이며 transform_body/build_head 가 원본 본문·JSON-LD 의 옛 주소를 이 값으로 치환한다. 메뉴 순서는 `NAV`(병원소개 → 맞춤한약치료 → 질환별 클리닉 → 진단·검사센터 → 원장칼럼 → 자주 묻는 질문 → 연오재 소식).
@@ -30,7 +32,7 @@ www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 �
 
 ## 명령
 - 로컬 미리보기: `python serve.py 8090` → http://localhost:8090 (cleanUrl 지원). 8080은 다른 프로젝트(한국인덕션)가 점유하므로 쓰지 않는다. `file://`로 열면 절대경로 때문에 깨진다.
-- 전체 재생성: `python _tools/build.py` (페이지 16개 + sitemap.xml + llms.txt + css/tailwind.css + FAQ 검수 문서 덮어씀. 수정일은 git HEAD 와 비교해 정하므로 커밋 전 빌드는 바뀐 페이지만 오늘 날짜가 된다. 직접 고친 HTML이 있으면 먼저 build.py에 반영할 것). CSS 빌드는 끝에서 `npm run build` 를 자동 호출하며 `_tools/tailwind/node_modules` 가 없으면 `npm install --prefix _tools/tailwind` 먼저.
+- 전체 재생성: `python _tools/build.py` (페이지 34개(기본 16 + FAQ 주제 12 + 칼럼 6) + sitemap.xml + llms.txt + css/tailwind.css + FAQ 검수 문서 덮어씀. 수정일은 git HEAD 와 비교해 정하므로 커밋 전 빌드는 바뀐 페이지만 오늘 날짜가 된다. 직접 고친 HTML이 있으면 먼저 build.py에 반영할 것). CSS 빌드는 끝에서 `npm run build` 를 자동 호출하며 `_tools/tailwind/node_modules` 가 없으면 `npm install --prefix _tools/tailwind` 먼저.
 - CSS 만 다시 빌드: `npm --prefix _tools/tailwind run build`
 - 사진 다시 변환: `python -I _tools/photos-convert.py` (매니페스트의 번호만 바꾸면 됨)
 - Python 주의: Git Bash 에서 `python` 은 다른 프로젝트 venv(`pyeonsawon-flask/.venv`)로 잡혀 Pillow 가 없다. 이미지 작업은 `/c/Users/music/AppData/Local/Programs/Python/Python314/python` 을 명시(Pillow, rembg, onnxruntime 설치돼 있음). build.py 는 어느 쪽이든 된다.
@@ -43,7 +45,7 @@ www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 �
 - 사람 사진은 사용자가 지목한 것만 쓴다. 촬영본 속 인물 식별을 추정해서 넣지 않는다(2026-10-20 조문영 사진 오류). 얼굴을 AI 로 생성하지 않는다(실제 사진의 배경 분리·화질 복원까지만).
 - 등장 애니메이션: 원본 framer-motion 초기값(`opacity:0`, `translate/scale`)을 `data-reveal` + `--reveal-from`으로 바꿔 두었다. `%` 단위 transform(가운데 정렬·오버레이)은 레이아웃용이라 변환 대상이 아니다.
 - 홈 히어로는 `restyle_hero()`가 문구를 왼쪽 아래로 배치하고 구분선+지표 3개를 붙인다. 높이는 `calc(100vh-64px)`. 영상은 사용자 지시로 그대로 둔다(압축·포스터 안 함).
-- 상단 `<details class="seo-fold">`는 원본의 검색엔진용 접힌 소개글이다. 지우지 말 것.
+- 상단 `<details class="seo-fold">`는 검색엔진·AI 용 접힌 소개글. 원본의 4,800자 일반론(전 페이지 동일)은 2026-10-23 `seo_fold_html()` 이 만드는 페이지별 사실 요약(이 페이지 설명 + 병원 사실 + 진료 분야·시간·예약)으로 교체했다. write_page 에서 치환하므로 마크업(`<details class="seo-fold"><summary>…<div id="bo_v_con">`)은 유지할 것.
 - 내부 링크는 확장자 없는 절대경로(`/diagnostics`, `/clinics/...`)를 유지한다.
 - 비밀값은 없다. 네이버 지도 Client ID(ncpKeyId)·카카오 JS 키는 도메인 등록이 필요한 공개 키, GA4 ID 도 공개값.
 - 진단 페이지의 수치("총 38년 · 100,000+")와 촬영 사진 사용은 2026-10-19 사용자가 확인했다. 임의로 빼지 않는다.
@@ -59,7 +61,11 @@ www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 �
 - [ ] 조문영 원장: 진료 분야 문구("스포츠 손상 · 근골격 초음파 진단 · 한방비만 · 도핑 상담")는 이력에서 추정한 것, "국제HI웰니스페스타" 표기도 확인 필요. 사진은 2026-10-22 받은 스튜디오 사진으로 해결(원본 `_tools/unused-assets/team/jo-munyoung_studio_original.png`, 338px 라 작은 프로필 전용).
 - [ ] 배포 도메인 확정 후: 네이버 클라우드(ncloud.com) Maps 에서 Client ID 발급·도메인 등록 후 site-config.js `naverMapKeyId` 입력(그 전까지는 구글 지도), www.yeonojae.com 이 아니면 build.py `SITE_URL`·site-config.js `siteUrl`·robots.txt 수정. 배포 후 서치콘솔에서 색인 요청, GA4 보존기간 14개월 설정(개인정보처리방침과 일치). 검색엔진 등록 자체는 사용자가 배포 전에 라이브 도메인으로 먼저 한다(아래 SEO 항목).
 - [x] SEO/AEO 1단계(2026-10-23 완료): GA4 전환·체류 이벤트, sitemap lastmod·dateModified·푸터 수정일 자동 갱신, llms.txt, BreadcrumbList·MedicalWebPage, Person 스키마 보강(이력 자동 분류), 의료광고 표현 자동 점검. 후속: GA4 관리 > 맞춤 정의에 link_text·section·faq_question·percent_scrolled 등록(사용자), `CLINIC["same_as"]` 에 네이버 플레이스 고유 URL·굿닥·카카오맵 추가(링크 대기), seo-fold 원본 문장 교체.
-- [ ] SEO/AEO 2단계(사용자 결정·자료 필요): 홈 `<title>`·설명 교체 문안, 의료진 페이지(/doctors), 원장칼럼 본문 3편(저자·작성일·수정일 표기). 3단계: 히어로 영상 자막(.vtt)·대본, FAQ 질문문 환자어 재점검, Microsoft Clarity 여부.
+- [x] SEO/AEO 2차(2026-10-23, 외부 진단서 6영역 대응): robots.txt AI 봇 명시 허용, JSON-LD 설명 클리셰 교체(`CLINIC_DESC`), seo-fold 사실 요약 교체, 서브페이지 중간 CTA + 클리닉 FAQ 하단 예약 CTA, FAQ 주제 페이지 12개, 칼럼 글 6편(초안), 푸터 네이버 플레이스 링크. sitemap 12→30.
+- [ ] 사용자 결정: 홈 `<title>`·메타 설명은 **유지**하기로 함(2026-10-23). "한방신경정신과 전문의" 문구 사실 여부만 확인 필요.
+- [ ] 보류: 의료진 페이지(/doctors)는 나중에(조문영 원장 분야 확인 후). 네이버 플레이스 **고유 URL**(현재는 검색 URL)과 굿닥·카카오맵 주소 받으면 `CLINIC["same_as"]`·`map_url`·푸터 링크 교체.
+- [ ] 2026-11-06 이후: GA4 이벤트 2주치(call_click·booking_click·scroll_depth·faq_open) 보고 CTA 위치 조정. 사용자가 GA4 맞춤 정의 등록을 먼저 해야 함.
+- [ ] 원장 검수: 칼럼 6편(`_tools/brand/칼럼_검수용_2026-10-23.md`), 글쓴이 표기(현재 '원장진')를 특정 원장으로 바꿀지. 3단계 후보: 히어로 영상 자막(.vtt)·대본, FAQ 질문문 환자어 재점검, Microsoft Clarity 여부.
 - [ ] SEO/AEO/GEO: 2026-10-21 측정 결과 현재 라이브 사이트는 병원명 검색에도 공식 사이트가 안 나옴(굿닥만). 사용자가 B안(서치콘솔·서치어드바이저·플레이스·디렉터리 등록과 정보 통일)을 직접 하기로 함 → 체크리스트 `_tools/brand/외부등록_체크리스트_2026-10-21.md`. 끝나면 A안(제목·설명·JSON-LD·robots·llms.txt·seo-fold 교체·클리닉 FAQ·의료진 페이지) 진행. 주소 표기는 2026-10-22 네이버 플레이스 기준("경기 고양시 덕양구 화중로 60 2층 205호, 206호")으로 푸터·예약 안내·JSON-LD·지도 카드 통일 완료.
 - [ ] 노란 물결 밑줄(`decoration-wavy decoration-amber-400`, 12곳): 소제목은 라벨형, 문장 강조는 브론즈 글자색, 원장 이름은 강조 제거로 바꾸는 안을 제안했고 결정 대기. 적용은 transform_body 치환으로.
 - [ ] 리디자인은 보류(사용자가 v2 선호). 다시 꺼내면 index-v3.html 의 섹션을 하나씩 보여주고 고르게 할 것.
