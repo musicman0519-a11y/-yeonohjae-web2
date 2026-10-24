@@ -226,7 +226,7 @@
       var q = norm(faqSearch.value);
       var shown = 0;
       cards.forEach(function (c) {
-        var ok = (topic === "all" || c.getAttribute("data-topic") === topic) && (!q || norm(c.textContent).indexOf(q) >= 0);
+        var ok = (topic === "all" || c.getAttribute("data-topic") === topic) && (!q || norm(c.getAttribute("data-search") || c.textContent).indexOf(q) >= 0);
         c.classList.toggle("hidden", !ok); if (ok) shown++;
       });
       sections.forEach(function (sec) {
