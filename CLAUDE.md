@@ -1,6 +1,6 @@
 # 연오재한의원 홈페이지 (정적 HTML)
 
-www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 새 구성(v2)으로 바꾼 사이트. 원본 10페이지 + 신규 원장칼럼·개인정보처리방침·404. 메뉴는 원본의 "블로그"를 "연오재 소식"(외부 블로그 링크 유지)으로 바꾸고 "원장칼럼"을 추가했다. Vercel에 폴더째 배포한다(서버 빌드 없음, CSS만 로컬에서 사전 빌드).
+옛 사이트 www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 새 구성(v2)으로 바꾼 사이트. **대표 도메인은 www.yeonojae.co.kr**(2026-10-24 전환, 가비아 2026-10-23 신규 등록, Vercel 에 apex→www 308). 옛 .com 은 KT 서버의 옛 사이트가 아직 살아 있고 가비아 DNS 권한 확인 후 .co.kr 로 리다이렉트 예정. 코드의 `SITE_URL`·site-config `siteUrl`·robots 가 .co.kr 이며, 원본 저장본의 .com 주소는 `write_page` 가 치환한다. 원본 10페이지 + 신규 원장칼럼·개인정보처리방침·404. 메뉴는 원본의 "블로그"를 "연오재 소식"(외부 블로그 링크 유지)으로 바꾸고 "원장칼럼"을 추가했다. Vercel에 폴더째 배포한다(서버 빌드 없음, CSS만 로컬에서 사전 빌드).
 자세한 페이지 목록·수정 방법은 README.md 참고.
 
 ## 구조
@@ -59,7 +59,7 @@ www.yeonojae.com(Next.js + Tailwind v4)을 정적 HTML로 복제한 뒤 홈을 �
 ## 남은 체크리스트
 - [ ] 원장 검수 대기: FAQ 70문항(`_tools/brand/FAQ_검수용_2026-10-23.md`, 수정은 `_tools/faq_data.py` 만 고치고 재생성), 푸터의 "고양 화정 · 일산 · 덕양 인접 진료" 문구와 진료시간 표기. 비급여 비용 안내 페이지는 만들지 않기로(비용 질문은 "진료 시 안내"). 만들게 되면 푸터 `FOOTER_GUIDE` 에 추가.
 - [ ] 조문영 원장: 진료 분야 문구("스포츠 손상 · 근골격 초음파 진단 · 한방비만 · 도핑 상담")는 이력에서 추정한 것, "국제HI웰니스페스타" 표기도 확인 필요. 사진은 2026-10-22 받은 스튜디오 사진으로 해결(원본 `_tools/unused-assets/team/jo-munyoung_studio_original.png`, 338px 라 작은 프로필 전용).
-- [ ] 배포 도메인 확정 후: 네이버 클라우드(ncloud.com) Maps 에서 Client ID 발급·도메인 등록 후 site-config.js `naverMapKeyId` 입력(그 전까지는 구글 지도), www.yeonojae.com 이 아니면 build.py `SITE_URL`·site-config.js `siteUrl`·robots.txt 수정. 배포 후 서치콘솔에서 색인 요청, GA4 보존기간 14개월 설정(개인정보처리방침과 일치). 검색엔진 등록 자체는 사용자가 배포 전에 라이브 도메인으로 먼저 한다(아래 SEO 항목).
+- [ ] 도메인 www.yeonojae.co.kr 연결(2026-10-24 진행 중): Vercel Domains 에 yeonojae.co.kr(308→www)·www 추가 완료, 가비아 DNS(@ A 76.76.21.21, www CNAME cname.vercel-dns.com) 입력 대기. 연결 뒤 네이버 클라우드(ncloud.com) Maps 에서 Client ID 발급·www.yeonojae.co.kr 등록 후 site-config.js `naverMapKeyId` 입력(그 전까지는 구글 지도). 서치콘솔·서치어드바이저에 새 도메인 등록·사이트맵 제출·색인 요청, GA4 보존기간 14개월 설정(개인정보처리방침과 일치). 검색엔진 등록 자체는 사용자가 배포 전에 라이브 도메인으로 먼저 한다(아래 SEO 항목).
 - [x] SEO/AEO 1단계(2026-10-23 완료): GA4 전환·체류 이벤트, sitemap lastmod·dateModified·푸터 수정일 자동 갱신, llms.txt, BreadcrumbList·MedicalWebPage, Person 스키마 보강(이력 자동 분류), 의료광고 표현 자동 점검. 후속: GA4 관리 > 맞춤 정의에 link_text·section·faq_question·percent_scrolled 등록(사용자), `CLINIC["same_as"]` 에 네이버 플레이스 고유 URL·굿닥·카카오맵 추가(링크 대기), seo-fold 원본 문장 교체.
 - [x] SEO/AEO 2차(2026-10-23, 외부 진단서 6영역 대응): robots.txt AI 봇 명시 허용, JSON-LD 설명 클리셰 교체(`CLINIC_DESC`), seo-fold 사실 요약 교체, 서브페이지 중간 CTA + 클리닉 FAQ 하단 예약 CTA, FAQ 주제 페이지 12개, 칼럼 글 6편(초안), 푸터 네이버 플레이스 링크. sitemap 12→30.
 - [ ] 사용자 결정: 홈 `<title>`·메타 설명은 **유지**하기로 함(2026-10-23). "한방신경정신과 전문의" 문구 사실 여부만 확인 필요.

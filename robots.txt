@@ -30,4 +30,4 @@ User-agent: Daum
 Allow: /
 Disallow: /_tools/
 
-Sitemap: https://www.yeonojae.com/sitemap.xml
+Sitemap: https://www.yeonojae.co.kr/sitemap.xml

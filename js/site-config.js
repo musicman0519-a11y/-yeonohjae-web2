@@ -1,6 +1,6 @@
 // 사이트 공통 설정 - 전화번호·예약 링크·지도 키 등은 여기서만 바꾸면 됩니다.
 window.SITE_CONFIG = {
-  siteUrl: "https://www.yeonojae.com",
+  siteUrl: "https://www.yeonojae.co.kr",
   phone: "031-994-2378",
   bookingUrl: "https://booking.naver.com/booking/13/bizes/889913?area=plt&map-search=1",
   // 지도: 네이버 지도 (2026-10-22 카카오에서 전환)
