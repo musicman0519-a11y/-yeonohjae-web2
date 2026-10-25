@@ -12,6 +12,7 @@
 - 사업자등록번호: 779-09-03367
 - 네이버 플레이스(지도·리뷰): https://map.naver.com/p/search/%EC%97%B0%EC%98%A4%EC%9E%AC%ED%95%9C%EC%9D%98%EC%9B%90
 - 공식 채널: https://chatblog.yeonojae.com/yeonojae
+- 공식 채널: https://www.youtube.com/@Nerve.doctor
 
 ## 진료시간
 - 평일: 09:00 – 20:00 (야간진료)
@@ -93,4 +94,4 @@
 - 이 사이트의 글과 사진은 연오재한의원이 직접 작성·촬영했습니다.
 - 의료법에 따라 치료 효과를 보장하는 표현을 쓰지 않습니다. 진료 내용과 비용은 개인마다 다르며 진료 시 안내합니다.
 - sitemap: https://www.yeonojae.co.kr/sitemap.xml
-- 최종 수정일: 2026-10-24
+- 최종 수정일: 2026-10-25

@@ -50,6 +50,24 @@
     window.addEventListener("scroll", onScroll, { passive: true });
   })();
 
+  /* ---------- 유튜브 클릭 재생: 클릭 전에는 썸네일만, 클릭하면 iframe(youtube-nocookie) ---------- */
+  document.querySelectorAll("[data-yt]").forEach(function (box) {
+    var play = function () {
+      if (box.querySelector("iframe")) return;
+      var id = box.getAttribute("data-yt");
+      var f = document.createElement("iframe");
+      f.src = "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0&modestbranding=1&hl=ko";
+      f.title = box.getAttribute("data-yt-title") || "YouTube 영상";
+      f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      f.setAttribute("allowfullscreen", "");
+      f.style.cssText = "position:absolute;inset:0;width:100%;height:100%;border:0";
+      box.innerHTML = "";
+      box.appendChild(f);
+      track("video_play", { video_id: id, video_title: f.title, section: sectionOf(box) });
+    };
+    box.addEventListener("click", play);
+  });
+
   /* ---------- 스크롤 등장 애니메이션 ---------- */
   var revealEls = Array.prototype.slice.call(document.querySelectorAll("[data-reveal]"));
   if ("IntersectionObserver" in window) {
