@@ -68,6 +68,22 @@
     box.addEventListener("click", play);
   });
 
+  /* ---------- 모바일 하단 고정 바: 히어로를 지나면 표시, 푸터가 보이면 숨김 ---------- */
+  var mobileBar = document.querySelector("[data-mobile-bar]");
+  if (mobileBar) {
+    var footerVisible = false;
+    var updateBar = function () {
+      var show = window.scrollY > 400 && !footerVisible;
+      mobileBar.classList.toggle("translate-y-full", !show);
+    };
+    var footerEl = document.querySelector("footer");
+    if (footerEl && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) { footerVisible = entries[0].isIntersecting; updateBar(); }, { threshold: 0 }).observe(footerEl);
+    }
+    window.addEventListener("scroll", updateBar, { passive: true });
+    updateBar();
+  }
+
   /* ---------- 스크롤 등장 애니메이션 ---------- */
   var revealEls = Array.prototype.slice.call(document.querySelectorAll("[data-reveal]"));
   if ("IntersectionObserver" in window) {
