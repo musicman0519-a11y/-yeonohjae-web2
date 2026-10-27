@@ -76,7 +76,7 @@
     var updateBar = function () {
       var show = window.scrollY > 300 && !footerVisible;
       if (mobileBar) mobileBar.classList.toggle("translate-y-full", !show);
-      if (floatingCta) floatingCta.classList.toggle("-translate-x-[140%]", !show);
+      if (floatingCta) { floatingCta.classList.toggle("-translate-x-full", !show); floatingCta.classList.toggle("opacity-0", !show); }
     };
     var footerEl = document.querySelector("footer");
     if (footerEl && "IntersectionObserver" in window) {
