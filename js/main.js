@@ -68,13 +68,15 @@
     box.addEventListener("click", play);
   });
 
-  /* ---------- 모바일 하단 고정 바: 히어로를 지나면 표시, 푸터가 보이면 숨김 ---------- */
+  /* ---------- 떠다니는 CTA: 왼쪽 아래 예약 버튼(데스크톱)·모바일 하단 바 — 히어로를 지나면 표시, 푸터가 보이면 숨김 ---------- */
   var mobileBar = document.querySelector("[data-mobile-bar]");
-  if (mobileBar) {
+  var floatingCta = document.querySelector("[data-floating-cta]");
+  if (mobileBar || floatingCta) {
     var footerVisible = false;
     var updateBar = function () {
-      var show = window.scrollY > 400 && !footerVisible;
-      mobileBar.classList.toggle("translate-y-full", !show);
+      var show = window.scrollY > 300 && !footerVisible;
+      if (mobileBar) mobileBar.classList.toggle("translate-y-full", !show);
+      if (floatingCta) floatingCta.classList.toggle("-translate-x-[140%]", !show);
     };
     var footerEl = document.querySelector("footer");
     if (footerEl && "IntersectionObserver" in window) {
