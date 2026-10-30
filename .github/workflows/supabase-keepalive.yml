@@ -1,0 +1,19 @@
+# Supabase 무료 플랜은 1주일 동안 요청이 없으면 프로젝트를 일시정지한다. 매일 한 번 읽기 요청을 보내 깨어 있게 한다.
+# GitHub 저장소 Settings > Secrets and variables > Actions 에 SUPABASE_URL, SUPABASE_ANON_KEY 를 넣어야 동작한다.
+name: supabase-keepalive
+on:
+  schedule:
+    - cron: "17 0 * * *"   # 매일 09:17 KST
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query cases table
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then echo "secrets not set"; exit 0; fi
+          code=$(curl -s -o /dev/null -w "%{http_code}" "$SUPABASE_URL/rest/v1/cases?select=id&limit=1" -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+          echo "status $code"

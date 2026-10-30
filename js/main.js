@@ -86,6 +86,94 @@
     updateBar();
   }
 
+  /* ---------- 회원 로그인 (Supabase Auth, 구글·카카오) ----------
+     site-config 의 supabaseUrl·supabaseAnonKey 가 있어야 동작. 없으면 로그인 UI 는 "준비 중". */
+  var sb = null;
+  var authReady = new Promise(function (resolve) {
+    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) { resolve(null); return; }
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js";
+    s.onload = function () { try { sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey); } catch (e) { sb = null; } resolve(sb); };
+    s.onerror = function () { resolve(null); };
+    document.head.appendChild(s);
+  });
+  var displayName = function (user) {
+    var m = (user && user.user_metadata) || {};
+    return m.full_name || m.name || m.preferred_username || (user && user.email ? user.email.split("@")[0] : "회원");
+  };
+  var renderAuth = function (session) {
+    var user = session && session.user;
+    var slot = document.querySelector("[data-auth-slot]");
+    var mslot = document.querySelector("[data-auth-slot-mobile]");
+    if (user) {
+      var name = displayName(user);
+      if (slot) slot.innerHTML = '<span class="px-2">' + name + '님</span><button type="button" class="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:text-white" data-logout>로그아웃</button>';
+      if (mslot) mslot.innerHTML = '<span class="flex-1 py-4 text-base font-medium text-white/80">' + name + '님</span><button type="button" class="py-4 text-sm font-semibold text-white/70 hover:text-white" data-logout>로그아웃</button>';
+      document.querySelectorAll("[data-logout]").forEach(function (b) {
+        b.addEventListener("click", function () { if (sb) sb.auth.signOut().then(function () { track("logout"); location.href = "/"; }); });
+      });
+    }
+  };
+  authReady.then(function (client) {
+    if (!client) {
+      var ls = document.querySelector("[data-login-status]");
+      if (ls) { ls.textContent = "회원 서비스는 준비 중입니다. 오픈되면 구글·카카오 계정으로 바로 가입할 수 있습니다."; ls.classList.remove("hidden"); }
+      document.querySelectorAll("[data-login]").forEach(function (b) { b.disabled = true; });
+      var cl = document.querySelector("[data-cases-login]");
+      if (cl) { cl.textContent = "회원 서비스 준비 중"; cl.setAttribute("aria-disabled", "true"); cl.classList.add("pointer-events-none", "opacity-60"); }
+      return;
+    }
+    client.auth.getSession().then(function (r) { renderAuth(r.data.session); initCases(r.data.session); });
+    client.auth.onAuthStateChange(function (event, session) {
+      if (event === "SIGNED_IN") { track("login", { method: (session && session.user && session.user.app_metadata && session.user.app_metadata.provider) || "" }); }
+      renderAuth(session); initCases(session);
+    });
+    /* /login 버튼 */
+    var kakaoBtn = document.querySelector('[data-login="kakao"]');
+    if (kakaoBtn && !cfg.kakaoLogin) { kakaoBtn.disabled = true; kakaoBtn.title = "카카오 로그인은 준비 중입니다"; }
+    document.querySelectorAll("[data-login]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var provider = b.getAttribute("data-login");
+        var next = new URLSearchParams(location.search).get("next") || "/cases";
+        if (!/^\/[a-z0-9\-\/]*$/i.test(next)) next = "/cases";
+        client.auth.signInWithOAuth({ provider: provider, options: { redirectTo: location.origin + next } }).then(function (r) {
+          if (r.error) { var ls2 = document.querySelector("[data-login-status]"); if (ls2) { ls2.textContent = "로그인에 실패했습니다: " + r.error.message; ls2.classList.remove("hidden"); } }
+        });
+      });
+    });
+  });
+  /* /cases: 회원이면 Supabase 의 cases 테이블을 불러와 표시 */
+  var casesLoaded = false;
+  var initCases = function (session) {
+    var root = document.querySelector("[data-cases]");
+    if (!root) return;
+    var guest = root.querySelector("[data-cases-guest]"), member = root.querySelector("[data-cases-member]");
+    if (!session) { if (guest) guest.classList.remove("hidden"); if (member) member.classList.add("hidden"); return; }
+    if (guest) guest.classList.add("hidden"); if (member) member.classList.remove("hidden");
+    if (casesLoaded || !sb) return;
+    casesLoaded = true;
+    var list = member.querySelector("[data-cases-list]"), status = member.querySelector("[data-cases-status]"), filters = member.querySelector("[data-cases-filters]"), count = member.querySelector("[data-cases-count]");
+    var esc = function (t) { return String(t || "").replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+    sb.from("cases").select("id,title,category,summary,body,doctor,published_at").order("published_at", { ascending: false }).then(function (r) {
+      if (r.error) { status.textContent = "사례를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. (" + r.error.message + ")"; return; }
+      var rows = r.data || [];
+      if (!rows.length) { status.textContent = "아직 등록된 사례가 없습니다. 곧 올라옵니다."; return; }
+      status.classList.add("hidden");
+      if (count) count.textContent = rows.length + "건";
+      var cats = []; rows.forEach(function (x) { if (x.category && cats.indexOf(x.category) < 0) cats.push(x.category); });
+      var chip = function (label, val, on) { return '<button type="button" class="rounded-full border px-4 py-2 text-sm font-semibold transition ' + (on ? "border-[#181d27] bg-[#181d27] text-white" : "border-[#e9eaeb] bg-white text-[#181d27]") + '" data-case-cat="' + esc(val) + '">' + esc(label) + '</button>'; };
+      var render = function (cat) {
+        if (filters) filters.innerHTML = chip("전체", "", !cat) + cats.map(function (c) { return chip(c, c, c === cat); }).join("");
+        list.innerHTML = rows.filter(function (x) { return !cat || x.category === cat; }).map(function (x) {
+          var d = x.published_at ? String(x.published_at).slice(0, 10).replace(/-/g, ".") : "";
+          return '<details class="group rounded-2xl border border-[#e9eaeb] bg-white p-6"><summary class="cursor-pointer list-none"><div class="flex items-center gap-3 text-sm"><span class="rounded-full bg-[#f4ede7] px-3 py-1 font-semibold text-[#9e7b60]">' + esc(x.category) + '</span><span class="text-[#717680]">' + esc(d) + (x.doctor ? " · " + esc(x.doctor) : "") + '</span></div><h3 class="mt-3 text-lg font-bold text-[#181d27] group-open:text-[#9e7b60]">' + esc(x.title) + '</h3><p class="mt-2 text-base leading-7 text-[#535862]">' + esc(x.summary) + '</p><span class="mt-3 inline-block text-sm font-semibold text-[#9e7b60]">자세히 보기</span></summary><div class="mt-4 whitespace-pre-line border-t border-[#e9eaeb] pt-4 text-base leading-7 text-[#3f4450]">' + esc(x.body) + '</div></details>';
+        }).join("");
+        if (filters) filters.querySelectorAll("[data-case-cat]").forEach(function (b) { b.addEventListener("click", function () { render(b.getAttribute("data-case-cat")); track("faq_filter", { topic: "case:" + b.getAttribute("data-case-cat") }); }); });
+      };
+      render("");
+    });
+  };
+
   /* ---------- 온라인 상담 폼 (/reservation): site-config.formEndpoint 가 비어 있으면 안내만 ---------- */
   var inquiry = document.querySelector("[data-inquiry]");
   if (inquiry) {
