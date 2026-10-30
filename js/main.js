@@ -86,6 +86,28 @@
     updateBar();
   }
 
+  /* ---------- 온라인 상담 폼 (/reservation): site-config.formEndpoint 가 비어 있으면 안내만 ---------- */
+  var inquiry = document.querySelector("[data-inquiry]");
+  if (inquiry) {
+    var statusEl = inquiry.querySelector("[data-inquiry-status]");
+    var say = function (msg) { if (statusEl) { statusEl.textContent = msg; statusEl.classList.remove("hidden"); statusEl.scrollIntoView({ block: "nearest", behavior: "smooth" }); } };
+    inquiry.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (!inquiry.checkValidity()) { inquiry.reportValidity(); return; }
+      if (!cfg.formEndpoint) {
+        say("온라인 상담 접수는 준비 중입니다. 지금은 카카오톡 채널(" + (cfg.kakaoChannelUrl || "") + ")이나 전화 " + (cfg.phone || "") + "로 문의해 주세요.");
+        track("inquiry_submit", { status: "not_ready", topic: inquiry.topic ? inquiry.topic.value : "" });
+        return;
+      }
+      var btn = inquiry.querySelector('button[type="submit"]');
+      if (btn) { btn.disabled = true; btn.textContent = "보내는 중…"; }
+      fetch(cfg.formEndpoint, { method: "POST", headers: { Accept: "application/json" }, body: new FormData(inquiry) })
+        .then(function (r) { if (!r.ok) throw new Error(String(r.status)); say("접수되었습니다. 진료시간 내에 확인하고 순서대로 연락드리겠습니다."); inquiry.reset(); track("inquiry_submit", { status: "ok", topic: inquiry.topic ? inquiry.topic.value : "" }); })
+        .catch(function () { say("전송에 실패했습니다. 전화 " + (cfg.phone || "") + " 또는 카카오톡으로 문의해 주세요."); track("inquiry_submit", { status: "error" }); })
+        .then(function () { if (btn) { btn.disabled = false; btn.textContent = "상담 신청하기"; } });
+    });
+  }
+
   /* ---------- 스크롤 등장 애니메이션 ---------- */
   var revealEls = Array.prototype.slice.call(document.querySelectorAll("[data-reveal]"));
   if ("IntersectionObserver" in window) {

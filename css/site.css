@@ -86,3 +86,6 @@ body.menu-open, body.modal-open { overflow: hidden; }
 .exam-item.is-active > span:first-child { color: #181d27; }
 .exam-img { opacity: 0; transition: opacity .5s ease; }
 .exam-img.is-active { opacity: 1; }
+
+/* 모바일 메뉴가 열려 있을 때는 하단 고정 바를 숨긴다 (2026-10-30) */
+.menu-open [data-mobile-bar] { translate: 0 100%; }

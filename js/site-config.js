@@ -10,6 +10,10 @@ window.SITE_CONFIG = {
   // 네이버 키가 없을 때 지도 자리: "google"(구글 지도 iframe, 키 불필요) 또는 "card"(주소 카드만)
   mapFallback: "google",
   naverPlaceUrl: "https://map.naver.com/p/search/%EC%97%B0%EC%98%A4%EC%9E%AC%ED%95%9C%EC%9D%98%EC%9B%90",
+  // 카카오톡 채널 (2026-10-30)
+  kakaoChannelUrl: "https://pf.kakao.com/_TNXHxj",
+  // 온라인 상담 폼 전송 주소(무료 폼 서비스 endpoint). 비어 있으면 /reservation 폼은 안내 문구만 보여 준다.
+  formEndpoint: "",
   address: "경기 고양시 덕양구 화중로 60 2층 205호, 206호",
   transit: "화정역 2번 출구에서 404m",
   mapLat: 37.6323269,
