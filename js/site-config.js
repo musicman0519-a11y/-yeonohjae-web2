@@ -23,7 +23,7 @@ window.SITE_CONFIG = {
   kakaoAppKey: "9d566411a15467b4a9168404d53161a3",
   // 회원 로그인 (Supabase Auth, 구글·카카오). anon 키는 공개용. 비어 있으면 로그인 버튼이 "준비 중"으로 표시된다. (2026-10-30)
   supabaseUrl: "https://lussfeezminlzaezgzhv.supabase.co",
-  supabaseAnonKey: "",
+  supabaseAnonKey: "sb_publishable_qMAvyJsLBUCtPLpgDdyjww_ob-cwLqs",
   // 카카오 로그인 제공자를 Supabase 에 등록한 뒤 true 로 (병원 명의 카카오 개발자 앱 필요)
   kakaoLogin: false,
   // Google Analytics 4 측정 ID (비우면 비활성)
