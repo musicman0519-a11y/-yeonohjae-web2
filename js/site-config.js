@@ -25,7 +25,7 @@ window.SITE_CONFIG = {
   supabaseUrl: "https://lussfeezminlzaezgzhv.supabase.co",
   supabaseAnonKey: "sb_publishable_qMAvyJsLBUCtPLpgDdyjww_ob-cwLqs",
   // 카카오 로그인 제공자를 Supabase 에 등록한 뒤 true 로 (병원 명의 카카오 개발자 앱 필요)
-  kakaoLogin: false,
+  kakaoLogin: true,
   // Google Analytics 4 측정 ID (비우면 비활성)
   gaId: "G-P0WZ4QYYH3"
 };
