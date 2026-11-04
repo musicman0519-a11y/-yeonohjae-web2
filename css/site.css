@@ -13,6 +13,7 @@
 }
 
 html { scroll-behavior: smooth; }
+body { word-break: keep-all; overflow-wrap: break-word; }   /* 2026-11-04 평가서 4장: 줄바꿈은 의미 단위로 */
 
 /* ---------- 검색엔진용 접힌 소개글 (원본 HiddenSeoContent) ---------- */
 .seo-fold {
