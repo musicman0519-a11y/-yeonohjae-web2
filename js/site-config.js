@@ -12,6 +12,7 @@ window.SITE_CONFIG = {
   naverPlaceUrl: "https://map.naver.com/p/search/%EC%97%B0%EC%98%A4%EC%9E%AC%ED%95%9C%EC%9D%98%EC%9B%90",
   // 카카오톡 채널 (2026-10-30)
   kakaoChannelUrl: "https://pf.kakao.com/_TNXHxj",
+  googleReviewUrl: "",            // 구글 비즈니스 프로필 리뷰 링크 (등록 후 입력하면 푸터에 "구글 리뷰 남기기" 표시)
   // 온라인 상담 폼 전송 주소(무료 폼 서비스 endpoint). 비어 있으면 /reservation 폼은 안내 문구만 보여 준다.
   formEndpoint: "",
   address: "경기 고양시 덕양구 화중로 60 2층 205호, 206호",

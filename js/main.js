@@ -196,6 +196,46 @@
     });
   }
 
+  /* ---------- 상담 폼 주제 프리셋 (?topic=맞춤한약 등, 2026-11-04) ---------- */
+  if (inquiry && inquiry.topic) {
+    try {
+      var tp = new URLSearchParams(location.search).get("topic");
+      if (tp) { Array.prototype.forEach.call(inquiry.topic.options, function (o) { if (o.value.indexOf(tp) >= 0) inquiry.topic.value = o.value; }); }
+    } catch (e) {}
+  }
+
+  /* ---------- 오늘 진료시간 문구 ([data-today-hours]) ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-today-hours]"), function (el) {
+    var d = new Date().getDay();
+    el.textContent = (d >= 1 && d <= 5) ? "오늘 20시까지" : "오늘 15시까지";
+  });
+
+  /* ---------- 린다이어트 4문항 자가진단 ([data-diet-quiz]) ---------- */
+  var quiz = document.querySelector("[data-diet-quiz]");
+  if (quiz) {
+    quiz.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (!quiz.checkValidity()) { quiz.reportValidity(); return; }
+      var fd = new FormData(quiz), premium = 0, standard = 0;
+      fd.forEach(function (v) { if (v === "premium") premium++; else if (v === "standard") standard++; });
+      var box = document.querySelector("[data-diet-result]"), t = document.querySelector("[data-diet-title]"), dsc = document.querySelector("[data-diet-desc]");
+      var isPremium = premium >= 2;
+      if (t) t.textContent = isPremium ? "린 프리미엄에 가깝습니다" : "린 스탠다드에 가깝습니다";
+      if (dsc) dsc.textContent = isPremium
+        ? "갱년기·소화·간 수치·요요처럼 '살이 안 빠지는 원인'이 같이 있는 경우입니다. 다이어트 한약에 기능 회복 한약을 더하고, 체성분·혈액·체열 검사로 원인부터 확인합니다."
+        : "식욕·야식·수면이 주된 문제라면 다이어트 한약과 체성분·자율신경(HRV) 검사로 시작합니다. 2주마다 근육이 유지되는지 확인하며 처방을 조정합니다.";
+      if (box) { box.classList.remove("hidden"); box.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+      track("diet_quiz", { result: isPremium ? "premium" : "standard", premium: premium, standard: standard });
+    });
+  }
+
+  /* ---------- 구글 리뷰 링크 (site-config googleReviewUrl) ---------- */
+  if (cfg.googleReviewUrl) {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-google-review]"), function (el) {
+      var a = el.querySelector("a"); if (a) a.href = cfg.googleReviewUrl; el.hidden = false;
+    });
+  }
+
   /* ---------- 스크롤 등장 애니메이션 ---------- */
   var revealEls = Array.prototype.slice.call(document.querySelectorAll("[data-reveal]"));
   if ("IntersectionObserver" in window) {
