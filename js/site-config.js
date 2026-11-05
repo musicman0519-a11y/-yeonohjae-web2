@@ -16,7 +16,7 @@ window.SITE_CONFIG = {
   // 온라인 상담 폼 전송 주소(무료 폼 서비스 endpoint). 비어 있으면 /reservation 폼은 안내 문구만 보여 준다.
   formEndpoint: "",
   address: "경기 고양시 덕양구 화중로 60 2층 205호, 206호",
-  transit: "화정역 2번 출구에서 404m",
+  transit: "화정역 2번 출구에서 400m, 걸어서 5분",
   mapLat: 37.6323269,
   mapLng: 126.8307436,
   mapZoom: 16,
