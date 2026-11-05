@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.yeonojae.co.kr</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/about/why-herbal</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://www.yeonojae.co.kr/about/doctors</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://www.yeonojae.co.kr/about/doctors</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/about/location</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/diagnostics</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/personalized-herbal-medicine</loc><lastmod>2026-11-05</lastmod></url>
@@ -13,13 +13,14 @@
   <url><loc>https://www.yeonojae.co.kr/clinics/skin-immunity</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/clinics/autonomic</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/clinics/ear-nose-throat</loc><lastmod>2026-11-05</lastmod></url>
+  <url><loc>https://www.yeonojae.co.kr/gongjindan</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/reservation</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://www.yeonojae.co.kr/blog</loc><lastmod>2026-11-04</lastmod></url>
-  <url><loc>https://www.yeonojae.co.kr/cases</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://www.yeonojae.co.kr/blog</loc><lastmod>2026-11-05</lastmod></url>
+  <url><loc>https://www.yeonojae.co.kr/cases</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/pricing</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/area/hwajeong</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/area/ilsan</loc><lastmod>2026-11-05</lastmod></url>
-  <url><loc>https://www.yeonojae.co.kr/column</loc><lastmod>2026-11-04</lastmod></url>
+  <url><loc>https://www.yeonojae.co.kr/column</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/column/why-diagnosis-first</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/column/in-house-decoction</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/column/child-growth-care</loc><lastmod>2026-11-05</lastmod></url>
@@ -40,4 +41,5 @@
   <url><loc>https://www.yeonojae.co.kr/faq/ent</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/faq/mind</loc><lastmod>2026-11-05</lastmod></url>
   <url><loc>https://www.yeonojae.co.kr/faq/skin</loc><lastmod>2026-11-05</lastmod></url>
+  <url><loc>https://www.yeonojae.co.kr/faq/gongjindan</loc><lastmod>2026-11-05</lastmod></url>
 </urlset>
