@@ -210,6 +210,30 @@
     el.textContent = (d >= 1 && d <= 5) ? "오늘 20시까지" : "오늘 15시까지";
   });
 
+  /* ---------- 증상 체커 ([data-symptom-check], 2026-11-06) ---------- */
+  var sym = document.querySelector("[data-symptom-check]");
+  if (sym) {
+    sym.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (!sym.checkValidity()) { sym.reportValidity(); return; }
+      var v = sym.sym.value, since = sym.since.value, exam = sym.exam.value;
+      var t = document.querySelector('template[data-sym="' + v + '"]'); if (!t) return;
+      var box = document.querySelector("[data-symptom-result]");
+      document.querySelector("[data-sym-title]").textContent = t.getAttribute("data-clinic-name");
+      document.querySelector("[data-sym-text]").textContent = t.innerHTML.trim();
+      document.querySelector("[data-sym-exam]").textContent = t.getAttribute("data-exam");
+      var link = document.querySelector("[data-sym-link]"); link.href = t.getAttribute("data-clinic"); link.textContent = t.getAttribute("data-clinic-name") + " 안내 보기";
+      var note = "";
+      if (exam === "normal") note = "병원 검사가 정상인데 계속 불편하면, 엑스레이·혈액검사가 보지 못하는 근막·자율신경·혈류를 초음파·체열·HRV로 보는 순서입니다. 결과지가 있으면 가져오세요.";
+      else if (exam === "found") note = "이상 소견을 들으셨다면 그 결과지를 가져오시면 겹치는 검사는 하지 않습니다. 병원 치료와 병행할 수 있는지 함께 봅니다.";
+      if (since === "long") note += (note ? " " : "") + "몇 달 이상 된 증상은 수면·자율신경까지 같이 보는 경우가 많습니다.";
+      if (v === "ent" && since === "new") note += (note ? " " : "") + "얼굴 마비가 1~2주 안에 시작됐다면 지금 전화 주세요. 첫 72시간이 중요합니다.";
+      document.querySelector("[data-sym-note]").textContent = note;
+      box.classList.remove("hidden"); box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      track("symptom_check", { clinic: v, since: since, exam: exam });
+    });
+  }
+
   /* ---------- 린다이어트 4문항 자가진단 ([data-diet-quiz]) ---------- */
   var quiz = document.querySelector("[data-diet-quiz]");
   if (quiz) {
