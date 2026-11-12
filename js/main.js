@@ -93,6 +93,8 @@
     if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) { resolve(null); return; }
     var s = document.createElement("script");
     s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js";
+    s.integrity = "sha384-KX6Y/AMIv9qA8TLCDul2JatZWeyrJVgj3Xu/0r30Nr05xO8md1+wHAgtdsRV9LoE";   // 버전을 올리면 해시도 다시 계산 (2026-11-12 보안 1단계)
+    s.crossOrigin = "anonymous";
     s.onload = function () { try { sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey); } catch (e) { sb = null; } resolve(sb); };
     s.onerror = function () { resolve(null); };
     document.head.appendChild(s);
@@ -106,7 +108,7 @@
     var slot = document.querySelector("[data-auth-slot]");
     var mslot = document.querySelector("[data-auth-slot-mobile]");
     if (user) {
-      var name = displayName(user);
+      var name = String(displayName(user)).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });   // OAuth 프로필 이름 이스케이프
       if (slot) slot.innerHTML = '<span class="px-2">' + name + '님</span><button type="button" class="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:text-white" data-logout>로그아웃</button>';
       if (mslot) mslot.innerHTML = '<span class="flex-1 py-4 text-base font-medium text-white/80">' + name + '님</span><button type="button" class="py-4 text-sm font-semibold text-white/70 hover:text-white" data-logout>로그아웃</button>';
       document.querySelectorAll("[data-logout]").forEach(function (b) {

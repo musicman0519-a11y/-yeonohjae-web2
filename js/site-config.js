@@ -20,8 +20,6 @@ window.SITE_CONFIG = {
   mapLat: 37.6323269,
   mapLng: 126.8307436,
   mapZoom: 16,
-  // (이전) 카카오 지도 키. 다시 쓰려면 main.js 의 네이버 블록을 카카오 블록으로 되돌릴 것.
-  kakaoAppKey: "9d566411a15467b4a9168404d53161a3",
   // 회원 로그인 (Supabase Auth, 구글·카카오). anon 키는 공개용. 비어 있으면 로그인 버튼이 "준비 중"으로 표시된다. (2026-10-30)
   supabaseUrl: "https://lussfeezminlzaezgzhv.supabase.co",
   supabaseAnonKey: "sb_publishable_qMAvyJsLBUCtPLpgDdyjww_ob-cwLqs",
