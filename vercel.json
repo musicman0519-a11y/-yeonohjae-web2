@@ -48,5 +48,22 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/fees",
+      "destination": "/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/location",
+      "destination": "/about/location",
+      "permanent": true
+    },
+    {
+      "source": "/doctors",
+      "destination": "/about/doctors",
+      "permanent": true
+    }
   ]
 }
