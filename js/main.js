@@ -371,9 +371,11 @@
       item.querySelector("[data-faq-toggle]").setAttribute("aria-expanded", open ? "true" : "false");
     };
     faqItems.forEach(function (item, i) {
-      setFaq(item, i === 0);
+      var keepOpen = item.hasAttribute("data-faq-open");   /* 홈 FAQ: 처음부터 펼침, 각자 따로 접힘 */
+      setFaq(item, keepOpen || i === 0);
       item.querySelector("[data-faq-toggle]").addEventListener("click", function () {
         var isOpen = !item.querySelector(".faq-answer").classList.contains("hidden");
+        if (keepOpen) { setFaq(item, !isOpen); return; }
         faqItems.forEach(function (o) { setFaq(o, false); });
         if (!isOpen) {
           setFaq(item, true);
